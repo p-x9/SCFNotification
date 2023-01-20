@@ -1,6 +1,6 @@
 # SCFNotification
 
-Swift wrapper of `CFNotificationCenter`.
+Swift wrapper of `CFNotificationCenter`.  
 No more tedious type conversions using pointers.
 
 ## Usage
