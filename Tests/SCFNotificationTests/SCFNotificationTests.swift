@@ -6,10 +6,12 @@ import XCTest
 ///　Perhaps each time one test method is called, Xcode makes a copy and continues with the rest of the tests.
 ///　Therefore, each time one method is called, we call the `removeEveryObserver` method at the end of it.
 
-final class SCFNotificationTests: XCTestCase {
-    let centerType: SCFNotificationCenter.CenterType = .local
+class SCFNotificationTests: XCTestCase {
+    var centerType: SCFNotificationCenter.CenterType { .local }
     lazy var notificationCenter: SCFNotificationCenter = .init(center: centerType)
     var observationStore: ObservationStore = .shared
+
+    var timeout: TimeInterval { 1 }
 
     override func setUp() {
         super.setUp()
@@ -45,7 +47,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
 
         removeEveryObserver()
     }
@@ -66,7 +68,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
 
         removeEveryObserver()
     }
@@ -92,7 +94,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
         removeEveryObserver()
     }
 
@@ -114,7 +116,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
 
         removeEveryObserver()
     }
@@ -137,7 +139,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
 
         removeEveryObserver()
     }
@@ -163,7 +165,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
 
         removeEveryObserver()
     }
@@ -186,7 +188,7 @@ final class SCFNotificationTests: XCTestCase {
                                             userInfo: [:] as CFDictionary,
                                             deliverImmediately: true)
 
-        wait(for: [exp], timeout: 2)
+        wait(for: [exp], timeout: timeout)
 
         removeEveryObserver()
     }
