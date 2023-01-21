@@ -78,6 +78,10 @@ class ObservationStore {
         localObservations = localObservations.cleanUpped()
 
         darwinNotifyObservations = darwinNotifyObservations.cleanUpped()
+
+#if os(macOS)
+        distributedObservations = distributedObservations.cleanUpped()
+#endif
     }
 
     func notifyIfNeeded(center: SCFNotificationCenter.CenterType, observer: UnsafeMutableRawPointer?, name: CFNotificationName?, object: UnsafeRawPointer?, userInfo: CFDictionary?) {
@@ -102,4 +106,19 @@ class ObservationStore {
             }
     }
 
+}
+
+extension ObservationStore {
+    func observations(for center: SCFNotificationCenter.CenterType) -> [Observation] {
+        switch center {
+        case .local:
+            return localObservations
+        case .darwinNotify:
+            return darwinNotifyObservations
+#if os(macOS)
+        case .distributed:
+            return distributedObservations
+#endif
+        }
+    }
 }

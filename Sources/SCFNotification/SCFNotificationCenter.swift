@@ -13,12 +13,12 @@ public class SCFNotificationCenter {
 
     private let center: CenterType
 
-    private init(center: CenterType) {
+    init(center: CenterType) {
         self.center = center
     }
 
     public func addObserver<Observer: AnyObject>(observer: Observer,
-                                                 name: CFNotificationName,
+                                                 name: CFNotificationName?,
                                                  object: AnyObject? = nil,
                                                  suspensionBehavior: CFNotificationSuspensionBehavior,
                                                  callback: @escaping SCFNotificationCallback<Observer, AnyObject>) {
@@ -31,7 +31,7 @@ public class SCFNotificationCenter {
     }
 
     public func removeObserver<Observer: AnyObject>(observer: Observer,
-                                                    name: CFNotificationName,
+                                                    name: CFNotificationName?,
                                                     object: AnyObject? = nil) {
         Self.removeObserver(center: center,
                             observer: observer,
