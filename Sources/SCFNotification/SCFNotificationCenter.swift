@@ -65,10 +65,14 @@ extension SCFNotificationCenter {
                                              suspensionBehavior: CFNotificationSuspensionBehavior,
                                              callback: @escaping SCFNotificationCallback<Observer, Any>) {
 
-        let observation = Observation(name: name.rawValue,
+        var observation = Observation(name: name.rawValue,
                                       observer: observer,
                                       object: object,
                                       notify: callback)
+
+        if center == .darwinNotify {
+            observation.object = nil
+        }
 
         ObservationStore.shared.add(observation, center: center)
 

@@ -20,11 +20,17 @@ struct Observation {
     weak var object: AnyObject?
     
     var observerPtr: UnsafeMutableRawPointer? {
-        unsafeBitCast(observer, to: UnsafeMutableRawPointer?.self)
+        guard let observer = self.observer else {
+            return nil
+        }
+        return unsafeBitCast(observer, to: UnsafeMutableRawPointer?.self)
     }
     
     var objectPtr: UnsafeRawPointer? {
-        unsafeBitCast(object, to: UnsafeRawPointer?.self)
+        guard let object = self.object else {
+            return nil
+        }
+        return unsafeBitCast(object, to: UnsafeRawPointer?.self)
     }
     
     let notify: SCFNotificationCallbackObjC
@@ -40,7 +46,8 @@ struct Observation {
                 observer = unsafeBitCast(observerPtr, to: Observer?.self)
             }
             var object: Object?
-            if let objectPtr {
+            if let objectPtr,
+               center?.centerType != .darwinNotify {
                 object = unsafeBitCast(objectPtr, to: Object?.self)
             }
             notify?(center, observer, name, object, userInfo)
