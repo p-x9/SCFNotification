@@ -34,8 +34,8 @@ struct Observation {
     }
     
     let notify: SCFNotificationCallbackObjC
-    
-    init<Observer, Object>(name: CFString, observer: Observer, object: Object?, notify: SCFNotificationCallback<Observer, Object>?) {
+
+    init<Observer: AnyObject, Object: AnyObject>(name: CFString, observer: Observer, object: Object?, notify: SCFNotificationCallback<Observer, Object>?) {
         self.name = name as CFString
         self.observer = observer as AnyObject?
         self.object = object as AnyObject?
