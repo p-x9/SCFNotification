@@ -38,63 +38,37 @@ class ObservationStore {
     func remove(center: SCFNotificationCenter.CenterType, observer: UnsafeMutableRawPointer?, object: UnsafeRawPointer?) {
         cleanUp()
 
-        let observation: Observation?
         switch center {
         case .local:
-            observation = localObservations
-                .filterWith(observer: observer, object: object)
-                .first
             localObservations = localObservations
                 .remove(observer: observer, object: object)
         case .darwinNotify:
-            observation = darwinNotifyObservations
-                .filterWith(observer: observer, object: object)
-                .first
             darwinNotifyObservations = darwinNotifyObservations
                 .remove(observer: observer, object: object)
 #if os(macOS)
         case .distributed:
-            observation = distributedObservations
-                .filterWith(observer: observer, object: object)
-                .first
             distributedObservations = distributedObservations
                 .remove(observer: observer, object: object)
 #endif
         }
-
-        guard let observation else { return }
-        CFNotificationCenterRemoveObserver(center.cfNotificationCenter, observation.observerPtr, observation.notificationName, observation.objectPtr)
     }
 
     func removeEvery(center: SCFNotificationCenter.CenterType, observer: UnsafeMutableRawPointer?) {
         cleanUp()
 
-        let observation: Observation?
         switch center {
         case .local:
-            observation = localObservations
-                .filterWith(observer: observer)
-                .first
             localObservations = localObservations
                 .removeEvery(observer: observer)
         case .darwinNotify:
-            observation = darwinNotifyObservations
-                .filterWith(observer: observer)
-                .first
             darwinNotifyObservations = darwinNotifyObservations
                 .removeEvery(observer: observer)
 #if os(macOS)
         case .distributed:
-            observation = distributedObservations
-                .filterWith(observer: observer)
-                .first
             distributedObservations = distributedObservations
                 .removeEvery(observer: observer)
 #endif
         }
-
-        guard let observation else { return }
-        CFNotificationCenterRemoveEveryObserver(center.cfNotificationCenter, observation.observerPtr)
     }
 
     func cleanUp() {
