@@ -1,15 +1,24 @@
 # SCFNotification
 
-Swift wrapper of `CFNotificationCenter`.  
+Swift wrapper of `CFNotificationCenter`.
 No more tedious type conversions using pointers.
 
+[CFNotificationCenter](https://developer.apple.com/documentation/corefoundation/cfnotificationcenter-rkv)
 ## Usage
-import
+
+### CenterTypes
+- local
+  (CFNotificationCenterGetLocalCenter)
+- darwinNotify
+  (CFNotificationCenterGetDarwinNotifyCenter)
+- distributed (macOS only)
+  (CFNotificationCenterGetDistributedCenter)
+### import
 ```swift
 import SCFNotification
 ```
 
-addObserver
+### addObserver
 ```swift
 SCFNotificationCenter
             .addObserver(center: .local,
@@ -18,9 +27,19 @@ SCFNotificationCenter
                          suspensionBehavior: .deliverImmediately) { center, `self`, name, object, userInfo in
                 print(center, name, object, userInfo)
             }
+
+/*  or  */
+
+SCFNotificationCenter.local
+            .addObserver(observer: self,
+                         name: .init("local.notification" as CFString),
+                         suspensionBehavior: .deliverImmediately) { center, `self`, name, object, userInfo in
+                self?.show()
+                print(center, name, object, userInfo)
+            }
 ```
 
-postNotification
+### postNotification
 ```swift
 SCFNotificationCenter
             .postNotification(center: .local,
@@ -29,13 +48,27 @@ SCFNotificationCenter
                               deliverImmediately: true
             )
 
+/*  or  */
+
+SCFNotificationCenter.local
+            .postNotification(name: .init("local.notification" as CFString),
+                              userInfo: [:] as CFDictionary,
+                              deliverImmediately: true
+            )
 ```
 
-removeObserver
+### removeObserver
 ```swift
 SCFNotificationCenter
             .removeObserver(center: .local,
                             observer: self,
+                            name: .init("local.notification" as CFString)
+            )
+
+/*  or  */
+
+SCFNotificationCenter.local
+            .removeObserver(observer: self,
                             name: .init("local.notification" as CFString)
             )
 ```
