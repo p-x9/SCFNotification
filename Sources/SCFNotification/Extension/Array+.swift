@@ -53,4 +53,16 @@ extension Array where Element == Observation {
             $0.observer != nil
         }
     }
+
+    func notifyNeededOnly(observer: UnsafeMutableRawPointer?, object: UnsafeRawPointer?) -> Array<Element> {
+        filter {
+            guard observer == $0.observerPtr else {
+                return false
+            }
+            if let objectPtr = $0.objectPtr {
+                return object == objectPtr
+            }
+            return true
+        }
+    }
 }

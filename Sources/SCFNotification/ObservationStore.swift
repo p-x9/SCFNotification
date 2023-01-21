@@ -93,7 +93,7 @@ class ObservationStore {
         }
 
         observations
-            .filterWith(observer: observer, object: object)
+            .notifyNeededOnly(observer: observer, object: object)
             .forEach {
                 $0.notify(center.cfNotificationCenter, observer, name, object, userInfo)
             }

@@ -1,6 +1,6 @@
 import Foundation
 
-public typealias SCFNotificationCallback<Observer, Object> = (CFNotificationCenter?, Observer?, CFNotificationName?, Object?, CFDictionary?) -> Void
+public typealias SCFNotificationCallback<Observer: AnyObject, Object: AnyObject> = (CFNotificationCenter?, Observer?, CFNotificationName?, Object?, CFDictionary?) -> Void
 
 
 public class SCFNotificationCenter {
@@ -17,11 +17,11 @@ public class SCFNotificationCenter {
         self.center = center
     }
 
-    public func addObserver<Observer>(observer: Observer,
-                                      name: CFNotificationName,
-                                      object: Any? = nil,
-                                      suspensionBehavior: CFNotificationSuspensionBehavior,
-                                      callback: @escaping SCFNotificationCallback<Observer, Any>) {
+    public func addObserver<Observer: AnyObject>(observer: Observer,
+                                                 name: CFNotificationName,
+                                                 object: AnyObject? = nil,
+                                                 suspensionBehavior: CFNotificationSuspensionBehavior,
+                                                 callback: @escaping SCFNotificationCallback<Observer, AnyObject>) {
         Self.addObserver(center: center,
                          observer: observer,
                          name: name,
@@ -30,22 +30,22 @@ public class SCFNotificationCenter {
                          callback: callback)
     }
 
-    public func removeObserver<Observer>(observer: Observer,
-                                         name: CFNotificationName,
-                                         object: Any? = nil) {
+    public func removeObserver<Observer: AnyObject>(observer: Observer,
+                                                    name: CFNotificationName,
+                                                    object: AnyObject? = nil) {
         Self.removeObserver(center: center,
                             observer: observer,
                             name: name,
                             object: object)
     }
 
-    public func removeEveryObserver<Observer>(observer: Observer) {
+    public func removeEveryObserver<Observer: AnyObject>(observer: Observer) {
         Self.removeEveryObserver(center: center,
                                  observer: observer)
     }
 
     public func postNotification(name: CFNotificationName?,
-                                 object: Any? = nil,
+                                 object: AnyObject? = nil,
                                  userInfo: CFDictionary,
                                  deliverImmediately: Bool) {
         Self.postNotification(center: center,
@@ -58,17 +58,21 @@ public class SCFNotificationCenter {
 
 
 extension SCFNotificationCenter {
-    public static func addObserver<Observer>(center: CenterType,
-                                             observer: Observer,
-                                             name: CFNotificationName,
-                                             object: Any? = nil,
-                                             suspensionBehavior: CFNotificationSuspensionBehavior,
-                                             callback: @escaping SCFNotificationCallback<Observer, Any>) {
+    public static func addObserver<Observer: AnyObject>(center: CenterType,
+                                                        observer: Observer,
+                                                        name: CFNotificationName,
+                                                        object: AnyObject? = nil,
+                                                        suspensionBehavior: CFNotificationSuspensionBehavior,
+                                                        callback: @escaping SCFNotificationCallback<Observer, AnyObject>) {
 
-        let observation = Observation(name: name.rawValue,
+        var observation = Observation(name: name.rawValue,
                                       observer: observer,
                                       object: object,
                                       notify: callback)
+
+        if center == .darwinNotify {
+            observation.object = nil
+        }
 
         ObservationStore.shared.add(observation, center: center)
 
@@ -83,10 +87,10 @@ extension SCFNotificationCenter {
         }, observation.name, observation.objectPtr, suspensionBehavior)
     }
 
-    public static func removeObserver<Observer>(center: CenterType,
-                                                observer: Observer,
-                                                name: CFNotificationName,
-                                                object: Any? = nil) {
+    public static func removeObserver<Observer: AnyObject>(center: CenterType,
+                                                           observer: Observer,
+                                                           name: CFNotificationName,
+                                                           object: AnyObject? = nil) {
         let observer = unsafeBitCast(observer, to: UnsafeMutableRawPointer.self)
 
         var objectPtr: UnsafeRawPointer?
@@ -99,8 +103,8 @@ extension SCFNotificationCenter {
         CFNotificationCenterRemoveObserver(center.cfNotificationCenter, observer, name, objectPtr)
     }
 
-    public static func removeEveryObserver<Observer>(center: CenterType,
-                                                     observer: Observer) {
+    public static func removeEveryObserver<Observer: AnyObject>(center: CenterType,
+                                                                observer: Observer) {
         let observer = unsafeBitCast(observer, to: UnsafeMutableRawPointer.self)
 
         ObservationStore.shared.removeEvery(center: center, observer: observer)
@@ -109,7 +113,7 @@ extension SCFNotificationCenter {
 
     public static func postNotification(center: CenterType,
                                         name: CFNotificationName?,
-                                        object: Any? = nil,
+                                        object: AnyObject? = nil,
                                         userInfo: CFDictionary,
                                         deliverImmediately: Bool) {
         var objectPtr: UnsafeRawPointer?
