@@ -21,7 +21,7 @@ struct Observation {
     
     weak var observer: AnyObject?
     weak var object: AnyObject?
-    
+
     var observerPtr: UnsafeMutableRawPointer? {
         guard let observer = self.observer else {
             return nil
