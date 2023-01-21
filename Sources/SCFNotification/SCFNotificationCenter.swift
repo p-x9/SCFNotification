@@ -44,7 +44,7 @@ public class SCFNotificationCenter {
                                  observer: observer)
     }
 
-    public func postNotification(name: CFNotificationName?,
+    public func postNotification(name: CFNotificationName,
                                  object: AnyObject? = nil,
                                  userInfo: CFDictionary,
                                  deliverImmediately: Bool) {
@@ -60,12 +60,12 @@ public class SCFNotificationCenter {
 extension SCFNotificationCenter {
     public static func addObserver<Observer: AnyObject>(center: CenterType,
                                                         observer: Observer,
-                                                        name: CFNotificationName,
+                                                        name: CFNotificationName?,
                                                         object: AnyObject? = nil,
                                                         suspensionBehavior: CFNotificationSuspensionBehavior,
                                                         callback: @escaping SCFNotificationCallback<Observer, AnyObject>) {
 
-        var observation = Observation(name: name.rawValue,
+        var observation = Observation(name: name?.rawValue,
                                       observer: observer,
                                       object: object,
                                       notify: callback)
@@ -89,7 +89,7 @@ extension SCFNotificationCenter {
 
     public static func removeObserver<Observer: AnyObject>(center: CenterType,
                                                            observer: Observer,
-                                                           name: CFNotificationName,
+                                                           name: CFNotificationName?,
                                                            object: AnyObject? = nil) {
         let observer = unsafeBitCast(observer, to: UnsafeMutableRawPointer.self)
 
@@ -98,7 +98,11 @@ extension SCFNotificationCenter {
             objectPtr = unsafeBitCast(object, to: UnsafeRawPointer.self)
         }
 
-        ObservationStore.shared.remove(center: center, observer: observer, object: objectPtr)
+        if center == .darwinNotify {
+            objectPtr = nil
+        }
+
+        ObservationStore.shared.remove(center: center, observer: observer, name: name, object: objectPtr)
 
         CFNotificationCenterRemoveObserver(center.cfNotificationCenter, observer, name, objectPtr)
     }
@@ -112,7 +116,7 @@ extension SCFNotificationCenter {
     }
 
     public static func postNotification(center: CenterType,
-                                        name: CFNotificationName?,
+                                        name: CFNotificationName,
                                         object: AnyObject? = nil,
                                         userInfo: CFDictionary,
                                         deliverImmediately: Bool) {

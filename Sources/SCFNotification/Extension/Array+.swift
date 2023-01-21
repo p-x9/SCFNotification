@@ -9,31 +9,16 @@
 import Foundation
 
 extension Array where Element == Observation {
-    func filterWith(observer: UnsafeMutableRawPointer?, object: UnsafeRawPointer?) -> Array<Element> {
-        filter {
-            guard $0.observerPtr == observer,
-                  $0.objectPtr == object else {
-                return false
-            }
-            return true
-        }
-    }
-
-
-    func filterWith(observer: UnsafeMutableRawPointer?) -> Array<Element> {
-        filter {
-            guard $0.observerPtr == observer else {
-                return false
-            }
-            return true
-        }
-    }
-
-    func remove(observer: UnsafeMutableRawPointer?, object: UnsafeRawPointer?) -> Array<Element> {
+    func remove(observer: UnsafeMutableRawPointer?, name: CFNotificationName?, object: UnsafeRawPointer?) -> Array<Element> {
         filter {
             guard $0.observerPtr == observer,
                   $0.objectPtr == object else {
                 return true
+            }
+
+            // if name is nil, remove all
+            if let name {
+                return !($0.name == name.rawValue)
             }
             return false
         }
@@ -54,15 +39,25 @@ extension Array where Element == Observation {
         }
     }
 
-    func notifyNeededOnly(observer: UnsafeMutableRawPointer?, object: UnsafeRawPointer?) -> Array<Element> {
+    func notifyNeededOnly(observer: UnsafeMutableRawPointer?, name: CFNotificationName?, object: UnsafeRawPointer?) -> Array<Element> {
         filter {
+            var isFiltered = true
+
             guard observer == $0.observerPtr else {
                 return false
             }
-            if let objectPtr = $0.objectPtr {
-                return object == objectPtr
+
+            // if name is nil, observe all notification
+            if $0.name != nil {
+                isFiltered = name?.rawValue == $0.name
             }
-            return true
+
+            // if object is nil, observe all notification
+            if let objectPtr = $0.objectPtr {
+                isFiltered = (object == objectPtr) && isFiltered
+            }
+
+            return isFiltered
         }
     }
 }
