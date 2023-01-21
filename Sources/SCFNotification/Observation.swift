@@ -11,9 +11,12 @@ import Foundation
 struct Observation {
     typealias SCFNotificationCallbackObjC = (CFNotificationCenter?, UnsafeMutableRawPointer?, CFNotificationName?, UnsafeRawPointer?, CFDictionary?) -> Void
     
-    let name: CFString
-    var notificationName: CFNotificationName {
-        .init(name)
+    let name: CFString?
+    var notificationName: CFNotificationName? {
+        guard let name else {
+            return nil
+        }
+        return .init(name)
     }
     
     weak var observer: AnyObject?
@@ -35,8 +38,8 @@ struct Observation {
     
     let notify: SCFNotificationCallbackObjC
 
-    init<Observer: AnyObject, Object: AnyObject>(name: CFString, observer: Observer, object: Object?, notify: SCFNotificationCallback<Observer, Object>?) {
-        self.name = name as CFString
+    init<Observer: AnyObject, Object: AnyObject>(name: CFString?, observer: Observer, object: Object?, notify: SCFNotificationCallback<Observer, Object>?) {
+        self.name = name
         self.observer = observer as AnyObject?
         self.object = object as AnyObject?
         

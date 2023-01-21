@@ -35,20 +35,23 @@ class ObservationStore {
         }
     }
 
-    func remove(center: SCFNotificationCenter.CenterType, observer: UnsafeMutableRawPointer?, object: UnsafeRawPointer?) {
+    func remove(center: SCFNotificationCenter.CenterType,
+                observer: UnsafeMutableRawPointer?,
+                name: CFNotificationName?,
+                object: UnsafeRawPointer?) {
         cleanUp()
 
         switch center {
         case .local:
             localObservations = localObservations
-                .remove(observer: observer, object: object)
+                .remove(observer: observer, name: name, object: object)
         case .darwinNotify:
             darwinNotifyObservations = darwinNotifyObservations
-                .remove(observer: observer, object: object)
+                .remove(observer: observer, name: name, object: object)
 #if os(macOS)
         case .distributed:
             distributedObservations = distributedObservations
-                .remove(observer: observer, object: object)
+                .remove(observer: observer, name: name, object: object)
 #endif
         }
     }
@@ -93,7 +96,7 @@ class ObservationStore {
         }
 
         observations
-            .notifyNeededOnly(observer: observer, object: object)
+            .notifyNeededOnly(observer: observer, name: name, object: object)
             .forEach {
                 $0.notify(center.cfNotificationCenter, observer, name, object, userInfo)
             }
