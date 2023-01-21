@@ -3,7 +3,61 @@ import Foundation
 public typealias SCFNotificationCallback<Observer, Object> = (CFNotificationCenter?, Observer?, CFNotificationName?, Object?, CFDictionary?) -> Void
 
 
-public enum SCFNotificationCenter {
+public class SCFNotificationCenter {
+    public static let local: SCFNotificationCenter = .init(center: .local)
+    public static let darwinNotify: SCFNotificationCenter = .init(center: .darwinNotify)
+
+#if os(macOS)
+    public static let distributed: SCFNotificationCenter = .init(center: .distributed)
+#endif
+
+    private let center: CenterType
+
+    private init(center: CenterType) {
+        self.center = center
+    }
+
+    public func addObserver<Observer>(observer: Observer,
+                                      name: CFNotificationName,
+                                      object: Any? = nil,
+                                      suspensionBehavior: CFNotificationSuspensionBehavior,
+                                      callback: @escaping SCFNotificationCallback<Observer, Any>) {
+        Self.addObserver(center: center,
+                         observer: observer,
+                         name: name,
+                         object: object,
+                         suspensionBehavior: suspensionBehavior,
+                         callback: callback)
+    }
+
+    public func removeObserver<Observer>(observer: Observer,
+                                         name: CFNotificationName,
+                                         object: Any? = nil) {
+        Self.removeObserver(center: center,
+                            observer: observer,
+                            name: name,
+                            object: object)
+    }
+
+    public func removeEveryObserver<Observer>(observer: Observer) {
+        Self.removeEveryObserver(center: center,
+                                 observer: observer)
+    }
+
+    public func postNotification(name: CFNotificationName?,
+                                 object: Any? = nil,
+                                 userInfo: CFDictionary,
+                                 deliverImmediately: Bool) {
+        Self.postNotification(center: center,
+                              name: name,
+                              object: object,
+                              userInfo: userInfo,
+                              deliverImmediately: deliverImmediately)
+    }
+}
+
+
+extension SCFNotificationCenter {
     public static func addObserver<Observer>(center: CenterType,
                                              observer: Observer,
                                              name: CFNotificationName,
