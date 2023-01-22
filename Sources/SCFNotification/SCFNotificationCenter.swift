@@ -1,6 +1,10 @@
 import Foundation
 
-public typealias SCFNotificationCallback<Observer: AnyObject, Object: AnyObject> = (CFNotificationCenter?, Observer?, CFNotificationName?, Object?, CFDictionary?) -> Void
+public typealias SCFNotificationCallback<Observer: AnyObject, Object: AnyObject> = (_ center: CFNotificationCenter?,
+                                                                                    _ observer: Observer?,
+                                                                                    _ name: CFNotificationName?,
+                                                                                    _ object: Object?,
+                                                                                    _ userInfo: CFDictionary?) -> Void
 
 
 public class SCFNotificationCenter {
