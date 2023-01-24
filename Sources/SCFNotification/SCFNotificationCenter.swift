@@ -58,6 +58,17 @@ public class SCFNotificationCenter {
                               userInfo: userInfo,
                               deliverImmediately: deliverImmediately)
     }
+
+    public func postNotification(name: CFNotificationName,
+                                 object: AnyObject? = nil,
+                                 userInfo: CFDictionary,
+                                 options: Set<Option>) {
+        Self.postNotification(center: center,
+                              name: name,
+                              object: object,
+                              userInfo: userInfo,
+                              options: options)
+    }
 }
 
 
@@ -131,6 +142,23 @@ extension SCFNotificationCenter {
 
         CFNotificationCenterPostNotification(center.cfNotificationCenter, name, objectPtr, userInfo, deliverImmediately)
     }
+
+    public static func postNotification(center: CenterType,
+                                        name: CFNotificationName,
+                                        object: AnyObject? = nil,
+                                        userInfo: CFDictionary,
+                                        options: Set<Option>) {
+        var objectPtr: UnsafeRawPointer?
+        if let object {
+            objectPtr = unsafeBitCast(object, to: UnsafeRawPointer.self)
+        }
+
+        let options: CFOptionFlags = options.reduce(into: 0) { partialResult, option in
+            partialResult = partialResult | option.flag
+        }
+
+        CFNotificationCenterPostNotificationWithOptions(center.cfNotificationCenter, name, objectPtr, userInfo, options)
+    }
 }
 
 extension SCFNotificationCenter {
@@ -151,6 +179,20 @@ extension SCFNotificationCenter {
             case .distributed:
                 return CFNotificationCenterGetDistributedCenter()
 #endif
+            }
+        }
+    }
+}
+
+extension SCFNotificationCenter {
+    public enum Option: CaseIterable {
+        case deliverImmediately
+        case postToAllSessions
+
+        var flag: CFOptionFlags {
+            switch self {
+            case .deliverImmediately: return kCFNotificationDeliverImmediately
+            case .postToAllSessions: return kCFNotificationPostToAllSessions
             }
         }
     }
