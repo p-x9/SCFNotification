@@ -154,7 +154,7 @@ extension SCFNotificationCenter {
         }
 
         let options: CFOptionFlags = options.reduce(into: 0) { partialResult, option in
-            partialResult = partialResult & option.flag
+            partialResult = partialResult | option.flag
         }
 
         CFNotificationCenterPostNotificationWithOptions(center.cfNotificationCenter, name, objectPtr, userInfo, options)
